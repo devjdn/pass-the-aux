@@ -77,3 +77,38 @@ describe("createRoom", () => {
     });
   });
 });
+
+describe("joinRoom", () => {
+  test("Correctly adds a guest", () => {
+    const room = unwrap(joinRoom(fresh(), id("g"), "Guest", T0 + 1));
+    expect(room.members[id("g")]).toMatchObject({
+      id: "g",
+      name: "Guest",
+      role: "guest",
+      connected: ConnectionStatus.Connected,
+      statusChangedAt: T0 + 1,
+      joinedAt: T0 + 1,
+    });
+  });
+
+  test("Trims the guest name", () => {
+    const room = unwrap(joinRoom(fresh(), id("g"), " Guest ", T0 + 1));
+    expect(room.members[id("g")]?.name).toBe("Guest");
+  });
+
+  test("Guest cannot join a locked room", () => {
+    const locked = { ...fresh(), joinable: false };
+    expect(joinRoom(locked, id("g"), "Guest", T0 + 1)).toMatchObject({
+      ok: false,
+      code: "room_locked",
+    });
+  });
+
+  test("Guest cannot join a closed room", () => {
+    const closed = { ...fresh(), closed: true };
+    expect(joinRoom(closed, id("g"), "Guest", T0 + 1)).toMatchObject({
+      ok: false,
+      code: "room_closed",
+    });
+  });
+});
