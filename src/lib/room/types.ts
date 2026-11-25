@@ -38,7 +38,8 @@ export type RoomErrorCode =
   | "room_full"
   | "invalid_name"
   | "not_found"
-  | "forbidden";
+  | "forbidden"
+  | "rejoin_required";
 
 export type RoomResult =
   | { ok: true; room: Room }
